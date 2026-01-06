@@ -41,3 +41,49 @@ distance(10, 25)  # -> 15
 - For arrays/NumPy: use `numpy.abs()` for vectorized efficiency.
 - Cannot use on incompatible types (e.g., strings); raises `TypeError`.
 - `abs(None)` raises `TypeError`; check types first in dynamic code.
+
+---
+
+## `all(iterable)`
+
+**Signature:** `all(iterable)`<br>
+**Returns:** `True` if every element in `iterable` is truthy (or iterable empty → `True`)
+
+**Examples**
+
+```py
+# Basic truthy checks
+all([True, 1, "non-empty"])  # -> True
+all([True, 0, "x"])          # -> False (0 is falsy)
+all([])                      # -> True (empty → True)
+all([1, 2, 3, 4])            # -> True
+
+# With generator (efficient, short-circuits)
+all(x > 0 for x in [1, 2, -1, 4])  # -> False (stops at -1)
+
+# Practical pattern: validate all users are active
+users = [{"name": "Alice", "active": True}, {"name": "Bob", "active": True}]
+all(u["active"] for u in users)  # -> True
+
+# Pattern: check all values within range
+values = [10, 20, 15, 18]
+all(5 <= v <= 25 for v in values)  # -> True
+```
+
+**Detailed Explanation:**
+- Returns `True` if **all** elements evaluate to `True` in a boolean context.
+- Empty iterables return `True` by convention (vacuous truth).
+- **Short-circuits**: stops immediately upon encountering a falsy value; remaining elements are not evaluated.
+- Works with any iterable (list, tuple, generator, set, dict keys, etc.).
+
+**Use-cases:**
+- Validating ALL conditions in a batch (e.g., all users have emails)
+- Pre-flight checks before processing
+- Assertions in test code
+- Ensuring all items meet a filter criteria
+
+**Tips & Pitfalls:**
+- Generator expressions + `all()` = lazy & efficient ; avoids materializing full list.
+- Empty list returns `True`; use explicit length checks if that's not desired: `len(items) > 0 and all(...)`
+- `all()` does not short-circuit on truthy values - it continues until a falsy one is found or list exhausted.
+- For readability, use `all()` over nested `if` statements.
