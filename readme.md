@@ -87,3 +87,50 @@ all(5 <= v <= 25 for v in values)  # -> True
 - Empty list returns `True`; use explicit length checks if that's not desired: `len(items) > 0 and all(...)`
 - `all()` does not short-circuit on truthy values - it continues until a falsy one is found or list exhausted.
 - For readability, use `all()` over nested `if` statements.
+
+---
+
+## `any(iterable)`
+
+**Signature:** `any(iterable)`<br>
+**Returns:** `True` if at least one element in `iterable` is truthy (or `False` if all falsy/empty)
+
+**Examples**
+
+```py
+# Basic checks
+any([0, "", None, False])      # -> False (all falsy)
+any([0, "", "ok", None])       # -> True ("ok" is truthy)
+any([])                        # -> False (empty)
+any([False, False, True])      # -> True
+
+# With generator (short-circuits on first truthy)
+any(x > 10 for x in [1, 2, 15, 20])  # -> True (stops at 15)
+
+# Practical pattern: check if ANY error occurred
+errors = [{"code": 200}, {"code": 404}, {"code": 200}]
+any(e["code"] >= 400 for e in errors)  # -> True
+
+# Pattern: fast membership check in performance-sensitive code
+blacklist = ["admin", "root", "system"]
+if any(username == b for b in blacklist):  # Better: use `in` for strings
+    reject_login()
+```
+
+**Detailed Explanation:**
+- Returns `True` if **at least one** element is truthy.
+- Returns `False` for empty iterables (no truthy elements to find).
+- **Short-circuits**: stops at the first truthy value; remaining elements unprocessed.
+- Complements `all()`; they are logical opposites for most inputs.
+
+**Use-cases:**
+- Checking if ANY validation passed (e.g., at least one login method works)
+- Fast failure detection (e.g., any errors in a batch)
+- Optional condition flags
+- Defensive checks before operations
+
+**Tips & Pitfalls:**
+- For string membership, use `in` operator directly: `if "admin" in blacklist:` (faster than `any()`)
+- `any([])` returns `False`, not `True`; empty = no truthy elements.
+- Short-circuits: once a truthy value is found, no further iteration.
+- Opposite of `all()`; `not all(x)` ≈ `any(not x for x in ...)`
